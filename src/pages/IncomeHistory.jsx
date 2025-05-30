@@ -140,7 +140,7 @@ const IncomeHistory = () => {
         <div className="bg-white shadow-xl rounded-xl mt-5">
           <DownloadExcel data={data} />
           <TableComponent
-            searchKey="Associate"
+            searchKey="User ID"
             searchKeys={["user.name", "user.userId", "fromUser.name", "fromUser.userId"]}
             title="Income History"
             headers={headers}

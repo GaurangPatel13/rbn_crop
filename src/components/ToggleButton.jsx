@@ -16,7 +16,7 @@ const ToggleButton = ({ isEnabled = false, onToggle }) => {
     return (
         <div>
             <div
-                className={`w-10 h-6 flex border items-center rounded-full p-1 cursor-pointer ${enabled ? 'bg-bg-color' : 'bg-bg-color1'
+                className={`w-10 h-6 flex border items-center rounded-full p-1 cursor-pointer mx-auto ${enabled ? 'bg-bg-color' : 'bg-bg-color1'
                     }`}
                 onClick={handleToggle}
             >

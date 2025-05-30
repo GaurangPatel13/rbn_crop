@@ -43,6 +43,11 @@ import CurrentMonthSale from "./pages/subItems/CurrentMonthSale";
 import EditProduct from "./pages/AddProductManagement/EditProduct";
 import EditProductPage from "./pages/AddProductManagement/EditProductPage";
 import AllFranchise from "./pages/subItems/AllFranchise";
+import BankDetails from "./pages/subItems/BankDetails";
+import FranchiseRegister from "./pages/subItems/FranchiseRegister";
+import BannerImages from "./pages/subItems/BannerImages";
+import ImageManagement from "./pages/subItems/ImageManagement";
+import WithdrawalRequest from "./pages/subItems/WithdrawalRequest";
 
 
 const RoutersPages = () => {
@@ -84,6 +89,7 @@ const RoutersPages = () => {
               <Route path={Routers.unpaid} element={<Unpaid />} />
               <Route path={Routers.modify} element={<Modify />} />
                 <Route path={Routers.AllUsers} element={<AllUsers />} />
+                <Route path={Routers.FranchiseRegister} element={<CreateDistributor />} />
                 <Route path={Routers.AllFranchise} element={<AllFranchise />} />
               <Route path={Routers.ViewProfile} element={<ViewProfile />} />
               <Route path={Routers.AddCategory} element={<AddCategory />} />
@@ -93,6 +99,7 @@ const RoutersPages = () => {
                 <Route path={Routers.EditProductPage} element={<EditProductPage />} />
 
               <Route path={Routers.addfund} element={<AddFund />} />
+              <Route path={Routers.BankDetails} element={<BankDetails/>} />
               <Route path={Routers.fundHistory} element={<FundHistory />} />
               <Route path={Routers.TodayDeposit} element={<TodayDeposit />} />
               <Route path={Routers.fundrequest} element={<FundRequest />} />
@@ -108,7 +115,13 @@ const RoutersPages = () => {
               <Route path={Routers.ProfileUpdate} element={<ProfileUpdate />} />
               <Route path={Routers.AddNews} element={<AddNews />} />
               <Route path={Routers.Invoice} element={<Invoice />} />
-              <Route path={Routers.IncomeHistory} element={<IncomeHistory />} />
+                <Route path={Routers.IncomeHistory} element={<IncomeHistory />} />
+
+                <Route path={Routers.WithdrawalRequest} element={<WithdrawalRequest />} />
+                
+              <Route path={Routers.BannerImages} element={<BannerImages />} />
+              <Route path={Routers.ImageManagement} element={<ImageManagement />} />
+
             </Route>
             <Route path={Routers.NotFound} element={<NotFound />} />
             <Route path="*" element={<Layout />} />

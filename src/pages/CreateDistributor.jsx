@@ -11,7 +11,6 @@ const CreateDistributor = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: "",
     franchiseName: "",
     ownerName: "",
     pincode: "",
@@ -27,6 +26,7 @@ const CreateDistributor = () => {
     accountNo: "",
     ifscCode: "",
     panNo: "",
+    sponsorReferralCode: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -43,9 +43,6 @@ const CreateDistributor = () => {
 
     if (!formData.email.trim() || !emailRegex.test(formData.email))
       errors.email = "Valid email is required";
-
-    if (!formData.password.trim() || formData.password.length < 6)
-      errors.password = "Password must be at least 6 characters";
 
     if (!formData.franchiseName.trim())
       errors.franchiseName = "Franchise Name is required";
@@ -131,6 +128,7 @@ const CreateDistributor = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("button clicked");
     if (!validate()) return;
 
     try {
@@ -140,13 +138,7 @@ const CreateDistributor = () => {
         Swal.fire({
           icon: "success",
           title: "Success",
-          html: `
-            <div style="text-align: left;">
-              <p><strong>Name:</strong> ${response?.data?.name || "N/A"}</p>
-              <p><strong>FCID:</strong> ${response?.data?.username || "N/A"}</p>
-              <p><strong>Password:</strong> ${response?.data?.key || "N/A"}</p>
-            </div>
-          `,
+          text: response?.message || "Franchise created successfully",
           showCloseButton: true,
           showConfirmButton: false,
           width: 500,
@@ -155,7 +147,6 @@ const CreateDistributor = () => {
         setFormData({
           name: "",
           email: "",
-          password: "",
           franchiseName: "",
           ownerName: "",
           pincode: "",
@@ -171,6 +162,7 @@ const CreateDistributor = () => {
           accountNo: "",
           ifscCode: "",
           panNo: "",
+          sponsorReferralCode: "",
         });
 
         setFormErrors({});
@@ -204,6 +196,13 @@ const CreateDistributor = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <InputField
+              label="Sponsor ID"
+              name="sponsorReferralCode"
+              placeholder={"Sponsor ID (Optional)"}
+              value={formData.sponsorReferralCode}
+              onChange={handleChange}
+            />
+            <InputField
               label="Name *"
               name="name"
               value={formData.name}
@@ -216,14 +215,6 @@ const CreateDistributor = () => {
               value={formData.email}
               onChange={handleChange}
               error={formErrors.email}
-            />
-            <InputField
-              label="Password *"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              error={formErrors.password}
             />
             <InputField
               label="Franchise Name *"
@@ -339,10 +330,10 @@ const CreateDistributor = () => {
 
           <ButtonWithIcon
             type="submit"
-            icon="save"
+            icon="Register"
             className="mt-6 w-full md:w-auto"
           >
-            Save
+            Register
           </ButtonWithIcon>
         </form>
       </div>

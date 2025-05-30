@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import TableComponent from "../../components/TableComponent";
 import {
-  getFundRequestHistory,
-  approveFundRequest,
-  rejectFundRequest,
+  getwithdrawalRequestHistory,
+  approveWithdrawalRequest,
+  rejectWithdrawalRequest,
 } from "../../api/admin-api";
 import { formatDateTime } from "../../utils/dateFunctions";
 import debounce from "lodash.debounce";
@@ -13,30 +13,23 @@ import { FcAcceptDatabase } from "react-icons/fc";
 import Swal from "sweetalert2";
 import PageLoader from "../../components/ui/PageLoader";
 import Modal from "../../components/Modal";
-import { FaEye } from "react-icons/fa6";
 import { toast } from "react-toastify";
 
-const FundRequest = () => {
+const WithdrawalRequest = () => {
   const headers = [
     "#",
-    "User ID",
+    "Request ID",
     "Name",
     "Date",
     "Amount",
     "Status",
-    "Transaction ID",
-    "UTR Number",
-    "Payment Proof",
     "Action",
   ];
 
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
-  userId: "",
-  fromDate: "",
-  toDate: "",
-});
-
+    requestId: "",
+  });
 
   const [data, setData] = useState([]);
   const [paymentProof, setPaymentProof] = useState("");
@@ -59,17 +52,11 @@ const FundRequest = () => {
   };
 
   const handleSearch = async () => {
-    const queryParts = [];
-
-    if (filters.userId) queryParts.push(`username=${filters.userId}`);
-    if (filters.fromDate) queryParts.push(`startDate=${filters.fromDate}`);
-    if (filters.toDate) queryParts.push(`endDate=${filters.toDate}`);
-
-    const queryString = queryParts.length ? `?${queryParts.join("&")}` : "";
+    const queryString = filters.userId ? `?username=${filters.userId}` : "";
 
     try {
-      const response = await getFundRequestHistory(queryString);
-      setData(response?.data?.requests || []);
+      const response = await getwithdrawalRequestHistory(queryString);
+      setData(response?.data?.withdrawals || []);
     } catch (error) {
       console.error("Search Error:", error);
     }
@@ -82,8 +69,8 @@ const FundRequest = () => {
   const fetchRequestFundHistory = async () => {
     try {
       setLoading(true);
-      const response = await getFundRequestHistory();
-      setData(response?.data?.requests || []);
+      const response = await getwithdrawalRequestHistory();
+      setData(response?.data?.withdrawals || []);
     } catch (error) {
       console.error("Error fetching fund request history:", error);
     } finally {
@@ -93,7 +80,7 @@ const FundRequest = () => {
 
   const handleApprove = async (id) => {
     const { value: adminRemarks } = await Swal.fire({
-      title: "Approve Fund Request",
+      title: "Approve Withdrawal Request",
       input: "text",
       inputLabel: "Admin Remarks",
       inputPlaceholder: "Enter remarks (optional)",
@@ -101,11 +88,11 @@ const FundRequest = () => {
       confirmButtonText: "Approve",
     });
 
-    if (!adminRemarks && adminRemarks !== "") return;
+    if (adminRemarks === undefined) return;
 
     try {
       setLoading(true);
-      const response = await approveFundRequest(id, { adminRemarks });
+      const response = await approveWithdrawalRequest(id, { adminRemarks });
 
       if (response?.success) {
         setData((prev) => prev.filter((d) => d._id !== id));
@@ -119,8 +106,8 @@ const FundRequest = () => {
           showConfirmButton: false,
         });
       }
-      toast.success(response?.message || "Fund request approved.");
-      fetchRequestFundHistory()
+      toast.success(response?.message || "Withdrawal request approved.");
+      fetchRequestFundHistory();
     } catch (error) {
       Swal.fire("Error", "Failed to approve request.", "error");
     } finally {
@@ -155,7 +142,7 @@ const FundRequest = () => {
 
     try {
       setLoading(true);
-      const response = await rejectFundRequest(id, formValues);
+      const response = await rejectWithdrawalRequest(id, formValues);
 
       if (response?.success) {
         setData((prev) => prev.filter((d) => d._id !== id));
@@ -169,8 +156,8 @@ const FundRequest = () => {
           showConfirmButton: false,
         });
       }
-      toast.success(response?.message || "Fund request rejected.");
-      fetchRequestFundHistory()
+      toast.success(response?.message || "Withdrawal request rejected.");
+      fetchRequestFundHistory();
     } catch (error) {
       Swal.fire("Error", "Failed to reject request.", "error");
     } finally {
@@ -181,15 +168,15 @@ const FundRequest = () => {
   return (
     <>
       {loading && <PageLoader />}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 bg-white shadow-xl rounded-xl">
-        {/* filters */}
-        <div>
-          <label className="block text-sm font-medium mb-1">User ID:</label>
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 bg-white shadow-xl rounded-xl">
+        User ID filter
+        <div className="md:col-span-1">
+          <label className="block text-sm font-medium mb-1">Request ID:</label>
           <div className="flex">
             <input
               type="text"
-              name="userId"
-              value={filters.userId}
+              name="requestId"
+              value={filters.requestId}
               onChange={handleInputChange}
               placeholder="Search User ID"
               className="w-full border border-gray-300 px-3 py-2 rounded-l-md text-sm focus:outline-none"
@@ -202,106 +189,37 @@ const FundRequest = () => {
             </button>
           </div>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">From Date:</label>
-          <input
-            type="date"
-            name="fromDate"
-            value={filters.fromDate}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 px-3 py-2 rounded-md text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">To Date:</label>
-          <input
-            type="date"
-            name="toDate"
-            value={filters.toDate}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 px-3 py-2 rounded-md text-sm"
-          />
-        </div>
-
-        <div className="flex items-end">
-          <button
-            className="w-full bg-bg-color text-white py-2 px-4 rounded-md"
-            onClick={handleSearch}
-          >
-            Search
-          </button>
-        </div>
-      </div>
+      </div> */}
 
       <div className="bg-white shadow-xl rounded-xl">
         <TableComponent
-          title="Fund Request"
+          title="Withdrawal Request"
           headers={headers}
           data={data}
-          searchKey="Member ID, Amount, Status"
-          searchKeys={["userId.username", "requestedAmount", "status"]}
+          searchKey="Request ID, Amount, Status"
+          searchKeys={["requestedId", "amount", "status"]}
           renderRow={(item, index) => (
             <tr key={index}>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {index + 1}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {item?.userId?.userId || "N/A"}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {item?.userId?.name || "N/A"}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {formatDateTime(item?.createdAt)}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {item?.requestedAmount}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {item?.status}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {item?.transactionId}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                {item?.utr}
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3">
-                <div className="flex gap-4 items-center">
-                  <img
-                    src={item?.paymentProof}
-                    alt=""
-                    className="w-10 h-10 object-cover rounded"
-                  />
-                  <FaEye
-                    className="text-2xl cursor-pointer"
-                    onClick={() => {
-                      setIsModalOpen(true);
-                      setPaymentProof(item?.paymentProof);
-                    }}
-                  />
-                </div>
-              </td>
-              <td className="border-r border-b border-text-white/40 p-2 md:p-3 flex gap-2">
+              <td className="border p-2">{index + 1}</td>
+              <td className="border p-2">{item?.requestedId || "N/A"}</td>
+              <td className="border p-2">{item?.userId?.name || "N/A"}</td>
+              <td className="border p-2">{formatDateTime(item?.requestedAt)}</td>
+              <td className="border p-2">{item?.amount}</td>
+              <td className="border p-2">{item?.status}</td>
+              <td className="border p-2 flex gap-2">
                 <ButtonWithIcon
                   title="Accept"
                   icon={<FcAcceptDatabase />}
                   bgcolor="bg-green-600"
                   onClick={() => handleApprove(item._id)}
-                  disabled={["approved", "rejected"].includes(
-                    item.status.toLowerCase()
-                  )}
+                  disabled={["approved", "rejected"].includes(item.status.toLowerCase())}
                 />
                 <ButtonWithIcon
                   title="Decline"
                   icon={<MdDoNotDisturb />}
                   bgcolor="bg-red-600"
                   onClick={() => handleReject(item._id)}
-                  disabled={["approved", "rejected"].includes(
-                    item.status.toLowerCase()
-                  )}
+                  disabled={["approved", "rejected"].includes(item.status.toLowerCase())}
                 />
               </td>
             </tr>
@@ -313,16 +231,15 @@ const FundRequest = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Payment Proof"
-        children={
-          <img
-            src={paymentProof}
-            alt="Payment Proof"
-            className="w-full h-full object-contain"
-          />
-        }
-      />
+      >
+        <img
+          src={paymentProof}
+          alt="Payment Proof"
+          className="w-full h-full object-contain"
+        />
+      </Modal>
     </>
   );
 };
 
-export default FundRequest;
+export default WithdrawalRequest;

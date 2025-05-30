@@ -1,49 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import TableComponent from '../../components/TableComponent';
-import DownloadExcel from '../../utils/DownloadExcel';
-import { getFundHistory } from '../../api/admin-api';
-import PageLoader from '../../components/ui/PageLoader';
-import { formatDateonly } from '../../utils/dateFunctions';
+import React, { useEffect, useState } from "react";
+import TableComponent from "../../components/TableComponent";
+import DownloadExcel from "../../utils/DownloadExcel";
+import { getFundHistory } from "../../api/admin-api";
+import PageLoader from "../../components/ui/PageLoader";
+import { formatDateonly } from "../../utils/dateFunctions";
 
 const headers = [
-  '#',
-  'Txn ID',
-  'User ID',
-  'Name',
-  'Total Amount',
-  'Type',
-  'Status',
-  'Date',
+  "#",
+  "Txn ID",
+  "User ID",
+  "Name",
+  "Total Amount",
+  "Type",
+  "Status",
+  "Date",
 ];
 
 const renderRow = (item, index) => (
   <tr key={index}>
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">{index + 1}</td>
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">{item?.transactionId}</td>
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">{item?.userId?.userId}</td>
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3 uppercase">{item?.userId?.name}</td>
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">{item?.amount}</td>
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">{item?.type}</td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">
+      {index + 1}
+    </td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">
+      {item?.transactionId}
+    </td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">
+      {item?.userId?.userId}
+    </td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3 uppercase">
+      {item?.userId?.name}
+    </td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">
+      {item?.amount}
+    </td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">
+      {item?.type}
+    </td>
     <td
-  className={`border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3 ${
-    {
-      completed: 'text-green-600 bg-green-200',
-      failed: 'text-red-600 bg-red-200',
-      pending: 'text-yellow-600 bg-yellow-200',
-    }[item?.status] || ''
-  }`}
->
-  {item?.status}
-</td>
+      className={`border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3 ${
+        {
+          completed: "text-green-600 bg-green-200",
+          failed: "text-red-600 bg-red-200",
+          pending: "text-yellow-600 bg-yellow-200",
+        }[item?.status] || ""
+      }`}
+    >
+      {item?.status}
+    </td>
 
-    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">{formatDateonly(item?.createdAt)}</td>
+    <td className="border-r whitespace-nowrap border-b border-text-white/40 p-2 md:p-3">
+      {formatDateonly(item?.createdAt)}
+    </td>
   </tr>
 );
 
 const TransactionReport = () => {
   const [filters, setFilters] = useState({
-    fromDate: '',
-    toDate: '',
+    fromDate: "",
+    toDate: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -62,7 +76,7 @@ const TransactionReport = () => {
     if (filters.fromDate) queryParts.push(`startDate=${filters.fromDate}`);
     if (filters.toDate) queryParts.push(`endDate=${filters.toDate}`);
 
-    const queryString = queryParts.length ? `?${queryParts.join('&')}` : '';
+    const queryString = queryParts.length ? `?${queryParts.join("&")}` : "";
     try {
       setLoading(true);
       const response = await getFundHistory(queryString);
@@ -80,7 +94,7 @@ const TransactionReport = () => {
       const tenDaysAgo = new Date();
       tenDaysAgo.setDate(today.getDate() - 10);
 
-      const format = (date) => date.toISOString().split('T')[0];
+      const format = (date) => date.toISOString().split("T")[0];
 
       return {
         fromDate: format(tenDaysAgo),
@@ -94,7 +108,9 @@ const TransactionReport = () => {
 
       try {
         setLoading(true);
-        const response = await getFundHistory(`?startDate=${fromDate}&endDate=${toDate}`);
+        const response = await getFundHistory(
+          `?startDate=${fromDate}&endDate=${toDate}`
+        );
         setData(response?.transactions || []);
       } catch (error) {
         console.error(error);
@@ -147,8 +163,8 @@ const TransactionReport = () => {
         <div className="bg-white shadow-xl rounded-xl mt-5">
           <DownloadExcel data={data} />
           <TableComponent
-            searchKey="Associate"
-            searchKeys={["userId.name"]}
+            searchKey="Search by Txn ID, User ID, or Name"
+            searchKeys={["transactionId", "userId.userId", "userId.name"]}
             title="Transactional Summary"
             headers={headers}
             data={data}

@@ -6,19 +6,19 @@ export const MainContent = {
   logo: logo,
 };
 export const backendConfig = {
-  // base: "http://192.168.48.186:6052/api",
-  // origin: "http://192.168.48.186:6052",
+  base: "http://192.168.1.21:5555/api",
+  origin: "http://192.168.1.21:5555",
   
-  // base: "http://192.168.1.22:8080/api",
-  // origin: "http://192.168.1.22:8080",
+  // base: "http://192.168.1.14:3060/api",
+  // origin: "http://192.168.1.14:3060",
   // base: "https://adm.api.smartchainstudio.in/api",
   // origin: "https://adm.api.smartchainstudio.in",
 
   // base: "https://api.admfashion.com/api",
   // origin: "https://api.admfashion.com",
 
-  base: "https://cnfp6kct-5049.inc1.devtunnels.ms/api",
-  origin: "https://cnfp6kct-5049.inc1.devtunnels.ms",
+  // base: "https://cnfp6kct-3040.inc1.devtunnels.ms/api",
+  // origin: "https://cnfp6kct-3040.inc1.devtunnels.ms/",
 
 };
 

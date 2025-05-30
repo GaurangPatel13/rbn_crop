@@ -36,6 +36,7 @@ const OrderHistory = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchOrderHistory();
   }, []);
@@ -59,11 +60,28 @@ const OrderHistory = () => {
   const generateInvoicePath = (id) => Routers.Invoice.replace(":id", id);
 
   const handleStatusChange = async (orderId, newStatus) => {
+    if (newStatus === "Delivered") {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to mark this order as Delivered?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Deliver",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+      });
+
+      if (!result.isConfirmed) {
+        return; // Cancel clicked, do nothing
+      }
+    }
+
     try {
       setLoading(true);
       setStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
       const response = await updateOrderStatus(orderId, newStatus);
       await fetchOrderHistory();
+
       if (response?.success) {
         Swal.fire({
           title: "Success",
@@ -87,7 +105,7 @@ const OrderHistory = () => {
           timerProgressBar: true,
         });
       }
-      setEditingOrderId(null); // Reset edit mode after success
+      setEditingOrderId(null);
     } catch (error) {
       console.log(error);
       Swal.fire({
@@ -106,42 +124,27 @@ const OrderHistory = () => {
   };
 
   const handleFilter = (status) => {
-    setOrderStatus(status);
+  setOrderStatus(status);
 
-    if (status === "All Orders") {
-      return setfilterOrderList(data);
-    }
-    if (status == "Pending") {
-      const filterOrders = data?.filter(
-        (order) => order?.orderStatuses === "Pending"
-      );
-      setfilterOrderList(filterOrders);
-    }
-    if (status == "Proceed") {
-      const filterOrders = data?.filter(
-        (order) => order?.orderStatuses === "Processing"
-      );
-      setfilterOrderList(filterOrders);
-    }
-    if (status == "Cancel") {
-      const filterOrders = data?.filter(
-        (order) => order?.orderStatuses === "Cancel"
-      );
-      setfilterOrderList(filterOrders);
-    }
-    if (status == "Delivered") {
-      const filterOrders = data?.filter(
-        (order) => order?.orderStatuses === "Delivered"
-      );
-      setfilterOrderList(filterOrders);
-    }
-    if (status == "Dispatched") {
-      const filterOrders = data?.filter(
-        (order) => order?.orderStatuses === "Dispatched"
-      );
-      setfilterOrderList(filterOrders);
-    }
+  if (status === "All Orders") return setfilterOrderList(data);
+
+  const filterMap = {
+    Pending: "Pending",
+    Proceed: "Processing",
+    Cancel: "Cancelled", // fix typo if needed
+    Delivered: "Delivered",
+    Dispatched: "Dispatched",
   };
+
+  const filterOrders = data?.filter(
+  (order) => order?.orderStatus === filterMap[status]
+);
+
+
+  setfilterOrderList(filterOrders);
+};
+
+
   const getStatusStyle = (status) => {
     switch (status) {
       case "Processing":
@@ -168,7 +171,6 @@ const OrderHistory = () => {
 
     return (
       <tr key={item._id}>
-        {console.log(item?.orderStatus)}
         <td className="p-2">{index + 1}</td>
         <td className="p-2">{item.address?.fullName}</td>
         <td className="p-2">{item.address?.phoneNumber}</td>
@@ -201,8 +203,14 @@ const OrderHistory = () => {
                 {item?.orderStatus}
               </span>
               <button
-                className="bg-red-200 rounded-full p-2 text-base text-red-500"
+                className="bg-red-200 rounded-full p-2 text-base text-red-500 disabled:opacity-50"
                 onClick={() => handleStatusChange1(item._id)}
+                disabled={item?.orderStatus === "Delivered"}
+                title={
+                  item?.orderStatus === "Delivered"
+                    ? "Already Delivered"
+                    : "Edit Status"
+                }
               >
                 <FaPencil />
               </button>
@@ -229,11 +237,12 @@ const OrderHistory = () => {
     (sum, item) => sum + Number(item?.totalAmount || 0),
     0
   );
+
   return (
     <>
       {loading && <PageLoader />}
       <div className="bg-white shadow-xl rounded-xl">
-        <div className="p-4">
+        {/* <div className="p-4">
           <SelectComponent
             label="Filter by Status"
             placeholder="Select status"
@@ -248,13 +257,13 @@ const OrderHistory = () => {
               "Pending",
             ]}
           />
-        </div>
+        </div> */}
         <TableComponent
           title="Order History"
           headers={headers}
           data={filterOrderList}
           renderRow={renderRow}
-          searchKeys={["amount", "userId.name", "userId.username"]}
+          searchKeys={["amount", "userId.name", "usernameorderNumber"]}
           searchKey="name"
           footer={
             <tr className="bg-gray-100 font-semibold">

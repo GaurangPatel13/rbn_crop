@@ -2,6 +2,9 @@ import AddCategory from "../pages/AddProductManagement/AddCategory";
 import EditProductPage from "../pages/AddProductManagement/EditProductPage";
 import LevelIncomeDistribution from "../pages/LevelIncomeDistribution";
 import AllFranchise from "../pages/subItems/AllFranchise";
+import BannerImages from "../pages/subItems/BannerImages";
+import FranchiseRegister from "../pages/subItems/FranchiseRegister";
+import WithdrawalRequest from "../pages/subItems/WithdrawalRequest";
 
 
 export const Routers = {
@@ -53,5 +56,10 @@ export const Routers = {
   CurrentMonthSale: "/current-month-sale",
   EditProductPage: "/edit-product",
   AllFranchise: "/all-franchise",
+  BankDetails: "/add-bank-details",
+  FranchiseRegister: "/franchise-registration",
+  BannerImages: "/add-banner-images",
+  ImageManagement: "/image-management",
+  WithdrawalRequest: "/withdrawal-request",
 };
 

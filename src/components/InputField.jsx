@@ -46,7 +46,7 @@ const InputField = ({
           )}
         </>
       ) : (
-        <>
+        <div className="relative">
           <input
             disabled={disable}
             placeholder={placeholder || label}
@@ -61,12 +61,12 @@ const InputField = ({
             <button
               type="button"
               onClick={handleToggle}
-              className="absolute right-2 top-[68%] transform -translate-y-1/2 text-gray-500"
+              className="absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500"
             >
               {showPassword ? <IoEyeSharp /> : <IoEyeOffOutline />}
             </button>
           )}
-        </>
+        </div>
       )}
 
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}

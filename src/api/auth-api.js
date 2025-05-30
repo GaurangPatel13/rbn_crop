@@ -14,7 +14,7 @@ export async function loginWithEmailAdmin(payload) {
 
 export async function createDistributor(payload) {
   try {
-    const response = await Axios.post(`/franshise/register`, payload);
+    const response = await Axios.post(`/franchise/register`, payload);
     return response?.data;
     
   } catch (error) {

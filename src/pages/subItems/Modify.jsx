@@ -115,7 +115,7 @@ const Modify = () => {
           headers={headers}
           data={userList}
           renderRow={(item, index) => (
-            <>
+            <tr key={index}>
               <td className="border-r border-b border-text-white/40 p-2 md:p-3">{index + 1}</td>
               <td className="border-r border-b border-text-white/40 p-2 md:p-3">{formatDateonly(item?.createdAt)}</td>
               <td className="border-r border-b border-text-white/40 p-2 md:p-3">{item?.username}</td>
@@ -143,7 +143,7 @@ const Modify = () => {
                   </button>
                 </div>
               </td>
-            </>
+            </tr>
           )}
           searchKeys={['name', 'username', 'mobile', 'selectRank']}
           searchKey="name , fcid , mobile ,rank"

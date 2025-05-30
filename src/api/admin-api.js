@@ -2,6 +2,16 @@ import { Axios } from "../constants/mainContent";
 
 const apiUrl = "/admin";
 
+export async function registerFranchise(payload) {
+    try {
+        const response = await Axios.post(`/franshise/register`, payload);
+        return response?.data;
+        
+    } catch (error) {
+        return error?.response?.data;
+    }
+}
+
 export async function addNews(payload) {
     try {
          const response = await Axios.post(`${apiUrl}/news-create`, payload);
@@ -85,10 +95,45 @@ export async function addProductForm(formData) {
   }
 }
 
+export async function addBannerImages(formData) {
+  try {
+    const response = await Axios.post(`${apiUrl}/add-banners`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response?.data;
+  } catch (error) {
+    return error?.response?.data;
+  }
+}
+
+export async function addBankDetails(formData) {
+  try {
+    const response = await Axios.post(`${apiUrl}/add-bank-details`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response?.data;
+  } catch (error) {
+    return error?.response?.data;
+  }
+}
+
 
 export async function getAllProducts() {
     try {
     const response = await Axios.get(`${apiUrl}/get-all-products`);
+    return response?.data;
+    } catch (error) {
+        return error?.response?.data;
+        }
+}
+
+export async function getAllImages() {
+    try {
+    const response = await Axios.get(`${apiUrl}/get-banners`);
     return response?.data;
     } catch (error) {
         return error?.response?.data;
@@ -104,7 +149,25 @@ export async function deleteProducts(id) {
         }
 }
 
+export async function deleteImage(id) {
+    try {
+    const response = await Axios.delete(`${apiUrl}/delete-product/${id}`);
+    return response?.data;
+    } catch (error) {
+        return error?.response?.data;
+        }
+}
+
 export async function updateStockStatus(id) {
+    try {
+    const response = await Axios.patch(`${apiUrl}/toggle-product-status/${id}`);
+    return response?.data;
+    } catch (error) {
+        return error?.response?.data;
+        }
+}
+
+export async function toggleImageStatus(id) {
     try {
     const response = await Axios.patch(`${apiUrl}/toggle-product-status/${id}`);
     return response?.data;
@@ -257,6 +320,20 @@ export async function getFundRequestHistory(query) {
         return error?.response?.data
     }
 }
+export async function getwithdrawalRequestHistory(query) {
+    try {
+        if (query) {
+            const response = await Axios.get(`${apiUrl}/get-all-withdrawal-requests${query}`);
+            return response?.data;
+        } else {
+            const response = await Axios.get(`${apiUrl}/get-all-withdrawal-requests`);
+            return response?.data;
+        }
+        
+    } catch (error) {
+        return error?.response?.data
+    }
+}
 
 export async function getFundHistory(query) {
     try {
@@ -280,6 +357,14 @@ export const approveFundRequest = (id, payload) => {
 
 export const rejectFundRequest = (id, payload) => {
   return Axios.patch(`${apiUrl}/reject-fund-request/${id}`, payload);
+};
+
+export const approveWithdrawalRequest = (id, payload) => {
+  return Axios.put(`${apiUrl}/approve/${id}`, payload); // Correct route
+};
+
+export const rejectWithdrawalRequest = (id, payload) => {
+  return Axios.put(`${apiUrl}/reject/${id}`, payload); // Correct route
 };
 
 
